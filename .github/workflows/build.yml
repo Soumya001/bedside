@@ -42,37 +42,31 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          set -uo pipefail
+          set -u
           OUTPUT=$(eas build \
             --platform ${{ inputs.platform }} \
             --profile preview \
             --non-interactive \
-            --wait 2>&1) || BUILD_FAILED=1
+            --wait 2>&1) || { echo "$OUTPUT"; echo "::error::EAS build failed — see output above"; exit 1; }
           echo "$OUTPUT"
-          if [ "${BUILD_FAILED:-0}" = "1" ]; then
-            echo "::error::EAS build failed — see output above (likely missing credentials)"
-            exit 1
-          fi
 
-          # Try to extract artifact URL directly from EAS output
-          ARTIFACT_URL=$(echo "$OUTPUT" | grep -oE 'https://expo\.dev/artifacts/eas/[^[:space:]"]+' | tail -1)
+          # Extract build UUID from the "See logs:" line
+          BUILD_ID=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1 || true)
+          echo "Build ID: $BUILD_ID"
 
-          # Fallback: query EAS GraphQL with the build UUID from the log URL
-          if [ -z "$ARTIFACT_URL" ]; then
-            BUILD_ID=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
-            echo "GraphQL fallback for build $BUILD_ID"
-            RESPONSE=$(curl -s -X POST https://api.expo.dev/graphql \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer ${{ secrets.EXPO_TOKEN }}" \
-              -d "{\"query\":\"{ builds { byId(buildId: \\\"$BUILD_ID\\\") { artifacts { applicationArchiveUrl } } } }\"}")
-            echo "GraphQL response: $RESPONSE"
-            ARTIFACT_URL=$(echo "$RESPONSE" | \
-              grep -oE '"applicationArchiveUrl":"[^"]*"' | \
-              sed 's/"applicationArchiveUrl":"//;s/"$//')
-          fi
+          # Query EAS GraphQL for the artifact download URL
+          RESPONSE=$(curl -s -X POST https://api.expo.dev/graphql \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.EXPO_TOKEN }}" \
+            -d "{\"query\":\"{ builds { byId(buildId: \\\"$BUILD_ID\\\") { artifacts { applicationArchiveUrl } } } }\"}")
+          echo "GraphQL response: $RESPONSE"
+
+          ARTIFACT_URL=$(echo "$RESPONSE" | \
+            node -e "let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{ try{ const r=JSON.parse(d); console.log(r.data.builds.byId.artifacts.applicationArchiveUrl||''); }catch(e){console.log('');} })")
 
           echo "artifact_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
-          echo "Final artifact URL: $ARTIFACT_URL"
+          echo "Artifact URL: $ARTIFACT_URL"
+          [ -n "$ARTIFACT_URL" ] || { echo "::error::Could not extract artifact URL from GraphQL response"; exit 1; }
 
       - name: Set platform metadata
         id: meta
