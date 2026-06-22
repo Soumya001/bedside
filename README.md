@@ -111,7 +111,7 @@ nculator/                              ← GitHub repo root
 │
 ├── 🌐 Web PWA
 │   ├── index.html                     # Splash screen + redirect to app
-│   ├── bedside-bundle.html            # Full self-contained app (JS + fonts inlined)
+│   ├── nculator.html                  # Full self-contained app (JS + fonts inlined)
 │   ├── Bedside Pro.dc.html            # Design concept / reference doc
 │   ├── manifest.json                  # PWA manifest (name, icons, start_url)
 │   ├── sw.js                          # Service worker — offline caching

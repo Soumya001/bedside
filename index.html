@@ -76,7 +76,10 @@
   </div>
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/nculator/sw.js');
-    setTimeout(() => { window.location.replace('bedside-bundle.html'); }, 800);
+    // nculator.html uses gzip blob decompression — requires DecompressionStream (iOS 16.4+, Chrome 80+).
+    // Fall back to the CDN version for older mobile browsers.
+    var target = (typeof DecompressionStream !== 'undefined') ? 'nculator.html' : 'Bedside%20Pro.dc.html';
+    setTimeout(function() { window.location.replace(target); }, 800);
   </script>
 </body>
 </html>
