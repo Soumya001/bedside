@@ -1,4 +1,4 @@
-const CACHE = 'nculater-v1';
+const CACHE = 'nculator-v1';
 const ASSETS = [
   '/',
   '/index.html',

@@ -1,16 +1,16 @@
 <div align="center">
 
-# 💊 Nculater
+# 💊 Nculator
 
 ### Clinical calculators for nurses and the wider clinical team
 
-[![Version](https://img.shields.io/badge/version-1.1.0-4ade80?style=for-the-badge&labelColor=0a0a0d)](https://github.com/Soumya001/nculater/releases)
-[![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-38bdf8?style=for-the-badge&labelColor=0a0a0d)](https://soumya001.github.io/nculater/)
-[![PWA](https://img.shields.io/badge/PWA-installable-a78bfa?style=for-the-badge&labelColor=0a0a0d)](https://soumya001.github.io/nculater/)
+[![Version](https://img.shields.io/badge/version-1.1.0-4ade80?style=for-the-badge&labelColor=0a0a0d)](https://github.com/Soumya001/nculator/releases)
+[![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-38bdf8?style=for-the-badge&labelColor=0a0a0d)](https://soumya001.github.io/nculator/)
+[![PWA](https://img.shields.io/badge/PWA-installable-a78bfa?style=for-the-badge&labelColor=0a0a0d)](https://soumya001.github.io/nculator/)
 [![License](https://img.shields.io/badge/license-MIT-fbbf24?style=for-the-badge&labelColor=0a0a0d)](LICENSE)
 [![Built with Expo](https://img.shields.io/badge/built%20with-Expo-f472b6?style=for-the-badge&labelColor=0a0a0d)](https://expo.dev)
 
-**[🚀 Live App](https://soumya001.github.io/nculater/) · [📱 React Native Source](bedside-native/) · [📋 Releases](https://github.com/Soumya001/nculater/releases)**
+**[🚀 Live App](https://soumya001.github.io/nculator/) · [📱 React Native Source](nculator/) · [📋 Releases](https://github.com/Soumya001/nculator/releases)**
 
 ---
 
@@ -22,9 +22,9 @@
 
 ---
 
-## ✨ What is Nculater?
+## ✨ What is Nculator?
 
-Nculater is a **mobile-first clinical calculator app** designed to work at the bedside — calm, clinical, and fast. Every result shows its full working so you and your checking colleague can verify the maths at a glance. No black-box answers. No guessing.
+Nculator is a **mobile-first clinical calculator app** designed to work at the bedside — calm, clinical, and fast. Every result shows its full working so you and your checking colleague can verify the maths at a glance. No black-box answers. No guessing.
 
 > Built to feel trustworthy and unhurried, like a tool a nurse can rely on at 3am.
 
@@ -69,12 +69,12 @@ Input → Validate → Calculate → Show working → Flag anything implausible
 Open in Chrome or Safari → Add to Home Screen → works offline
 
 ```
-https://soumya001.github.io/nculater/
+https://soumya001.github.io/nculator/
 ```
 
 ### React Native (native app)
 ```bash
-cd bedside-native
+cd nculator
 npm install
 npx expo start        # scan QR with Expo Go app
 ```
@@ -107,18 +107,21 @@ eas build --platform ios       # → requires Apple Developer account
 ## 🗂️ Project structure
 
 ```
-nculater/
+nculator/                         ← GitHub repo root
 ├── 🌐 Web PWA
 │   ├── index.html                # Splash + redirect
 │   ├── bedside-bundle.html       # Self-contained app (fonts + JS inlined)
 │   ├── manifest.json             # PWA manifest
 │   ├── sw.js                     # Service worker (offline support)
-│   └── .github/workflows/        # Auto-deploy to GitHub Pages
+│   └── .github/workflows/        # Auto-deploy to GitHub Pages + build APK
 │
 └── 📱 React Native
-    └── bedside-native/
+    └── nculator/
         ├── App.js                # Root: navigation + global context
         ├── app.json              # Expo config
+        ├── eas.json              # EAS build profiles
+        ├── plugins/
+        │   └── withKotlinVersion.js  # Kotlin 1.9.25 fix
         ├── src/
         │   ├── calculators.js    # All 12 formulas (pure JS)
         │   ├── theme.js          # Design tokens
@@ -172,15 +175,15 @@ nculater/
 
 | Version | What's in it |
 |---|---|
-| [v1.1.0](https://github.com/Soumya001/nculater/releases/tag/v1.1.0) | React Native / Expo source — full native app |
-| [v1.0.0](https://github.com/Soumya001/nculater/releases/tag/v1.0.0) | Web PWA — 12 calculators, offline-capable |
+| [v1.1.0](https://github.com/Soumya001/nculator/releases/tag/v1.1.0) | React Native / Expo source — full native app |
+| [v1.0.0](https://github.com/Soumya001/nculator/releases/tag/v1.0.0) | Web PWA — 12 calculators, offline-capable |
 
 ---
 
 ## 🤝 Contributing
 
 1. Fork → branch → PR
-2. All calculator logic lives in `bedside-native/src/calculators.js` — pure JS, easy to test
+2. All calculator logic lives in `nculator/src/calculators.js` — pure JS, easy to test
 3. Add a new tool: add to `TOOLS` array + handle result layout in `ToolScreen.js`
 
 ---
@@ -191,6 +194,6 @@ Made with care for nurses and the clinical team.
 
 **Accuracy first. Speed second. Safety always.**
 
-[![Live App](https://img.shields.io/badge/🌐_Live_App-soumya001.github.io/nculater-4ade80?style=for-the-badge&labelColor=0a0a0d)](https://soumya001.github.io/nculater/)
+[![Live App](https://img.shields.io/badge/🌐_Live_App-soumya001.github.io/nculator-4ade80?style=for-the-badge&labelColor=0a0a0d)](https://soumya001.github.io/nculator/)
 
 </div>

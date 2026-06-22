@@ -1,8 +1,8 @@
 {
-  "name": "Nculater — Clinical Calculators",
-  "short_name": "Nculater",
+  "name": "Nculator — Clinical Calculators",
+  "short_name": "Nculator",
   "description": "12 bedside calculators for nurses and doctors. Drug dose, IV drip, pump rate, weight-based dosing, infusion time, unit conversion, SpO₂ assessment, titration, cannula gauge, creatinine clearance, reconstitution, and BSA.",
-  "start_url": "/nculater/",
+  "start_url": "/nculator/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a0d",

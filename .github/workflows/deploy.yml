@@ -1,4 +1,4 @@
-name: Deploy Bedside to GitHub Pages
+name: Deploy Nculator to GitHub Pages
 
 on:
   push:
