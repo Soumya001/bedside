@@ -107,30 +107,49 @@ eas build --platform ios       # → requires Apple Developer account
 ## 🗂️ Project structure
 
 ```
-nculator/                         ← GitHub repo root
+nculator/                              ← GitHub repo root
+│
 ├── 🌐 Web PWA
-│   ├── index.html                # Splash + redirect
-│   ├── bedside-bundle.html       # Self-contained app (fonts + JS inlined)
-│   ├── manifest.json             # PWA manifest
-│   ├── sw.js                     # Service worker (offline support)
-│   └── .github/workflows/        # Auto-deploy to GitHub Pages + build APK
+│   ├── index.html                     # Splash screen + redirect to app
+│   ├── bedside-bundle.html            # Full self-contained app (JS + fonts inlined)
+│   ├── Bedside Pro.dc.html            # Design concept / reference doc
+│   ├── manifest.json                  # PWA manifest (name, icons, start_url)
+│   ├── sw.js                          # Service worker — offline caching
+│   ├── support.js                     # PWA install prompt helper
+│   ├── .nojekyll                      # Tells GitHub Pages to skip Jekyll
+│   ├── README.md                      # ← you are here
+│   └── uploads/
+│       └── bedside-icon.png           # App icon (1254×1254, used by PWA)
+│
+├── ⚙️ CI / CD
+│   └── .github/workflows/
+│       ├── deploy.yml                 # Push to main → deploy PWA to GitHub Pages
+│       └── build.yml                 # Manual trigger → EAS Android APK + GitHub Release
 │
 └── 📱 React Native
     └── nculator/
-        ├── App.js                # Root: navigation + global context
-        ├── app.json              # Expo config
-        ├── eas.json              # EAS build profiles
+        ├── App.js                     # Root: navigation + global theme context
+        ├── app.json                   # Expo config (bundle ID, icons, plugins)
+        ├── eas.json                   # EAS build profiles (preview/dev/production)
+        ├── package.json               # npm dependencies (Expo SDK 52)
+        ├── babel.config.js            # Babel preset for Expo
+        ├── setup-eas.sh               # CI auth check script
+        ├── README.md                  # React Native quick-start guide
+        ├── assets/
+        │   ├── icon.png               # App icon (1024×1024)
+        │   ├── adaptive-icon.png      # Android adaptive icon foreground
+        │   └── splash.png             # Splash screen image
         ├── plugins/
-        │   └── withKotlinVersion.js  # Kotlin 1.9.25 fix
-        ├── src/
-        │   ├── calculators.js    # All 12 formulas (pure JS)
-        │   ├── theme.js          # Design tokens
-        │   └── screens/
-        │       ├── HomeScreen.js
-        │       ├── ToolsScreen.js
-        │       ├── ToolScreen.js
-        │       ├── ReferenceScreen.js
-        │       └── SettingsScreen.js
+        │   └── withKotlinVersion.js   # Forces Kotlin 1.9.25 (Compose Compiler fix)
+        └── src/
+            ├── calculators.js         # All 12 formulas — pure JS, no dependencies
+            ├── theme.js               # Design tokens: dark/light + 5 accent colours
+            └── screens/
+                ├── HomeScreen.js      # Pinned/recent cards + full tool grid
+                ├── ToolsScreen.js     # Searchable tool list
+                ├── ToolScreen.js      # Calculator UI + sticky result footer
+                ├── ReferenceScreen.js # How to use + legal framework + SpO₂ targets
+                └── SettingsScreen.js  # Theme toggle + accent colour picker
 ```
 
 ---
