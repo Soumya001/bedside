@@ -19,24 +19,35 @@ jobs:
         run: cd nculator && bash setup-eas.sh
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: EAS account info
-        run: cd nculator && eas whoami && eas project:info 2>&1 || echo "project:info failed"
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: Build APK
+      - name: Build APK and get build ID
         id: eas_build
         run: |
           OUTPUT=$(cd nculator && eas build --platform android --profile preview --non-interactive --wait 2>&1)
           echo "$OUTPUT"
-          APK_URL=$(echo "$OUTPUT" | grep -oE 'https://expo\.dev/artifacts/eas/[A-Za-z0-9_./-]+\.apk' | tail -1)
-          echo "apk_url=$APK_URL" >> $GITHUB_OUTPUT
+          # Extract the EAS build UUID from the "See logs:" URL line
+          BUILD_ID=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
+          echo "build_id=$BUILD_ID"
+          echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: Get APK download URL from EAS
+        id: get_apk
+        run: |
+          BUILD_ID="${{ steps.eas_build.outputs.build_id }}"
+          echo "Querying EAS for build $BUILD_ID"
+          RESPONSE=$(curl -s -X POST https://api.expo.dev/graphql \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.EXPO_TOKEN }}" \
+            -d "{\"query\":\"query { builds { byId(buildId: \\\"$BUILD_ID\\\") { status artifacts { applicationArchiveUrl } } } }\"}")
+          echo "EAS response: $RESPONSE"
+          APK_URL=$(echo "$RESPONSE" | grep -oE '"applicationArchiveUrl":"[^"]*"' | sed 's/"applicationArchiveUrl":"//;s/"$//')
+          echo "APK URL: $APK_URL"
+          echo "apk_url=$APK_URL" >> $GITHUB_OUTPUT
       - name: Download APK
         run: |
-          APK_URL="${{ steps.eas_build.outputs.apk_url }}"
-          echo "Downloading APK from: $APK_URL"
-          curl -L "$APK_URL" -o nculator-preview.apk
+          APK_URL="${{ steps.get_apk.outputs.apk_url }}"
+          echo "Downloading from: $APK_URL"
+          curl -fL "$APK_URL" -o nculator-preview.apk
           ls -lh nculator-preview.apk
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -44,9 +55,11 @@ jobs:
           tag_name: v${{ github.run_number }}
           name: "Nculator v${{ github.run_number }}"
           body: |
-            Android APK built from commit ${{ github.sha }}
+            Android APK — built automatically by EAS Build.
 
-            Install by downloading `nculator-preview.apk` below.
+            **Download** `nculator-preview.apk` below and install it on your Android device.
+
+            Built from commit ${{ github.sha }}
           files: nculator-preview.apk
           draft: false
           prerelease: false
