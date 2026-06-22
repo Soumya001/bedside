@@ -18,7 +18,7 @@ echo "Checking for existing project..."
 EXISTING=$(curl -sf -X POST https://api.expo.dev/graphql \
   -H "Authorization: Bearer $EXPO_TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{\"query\":\"{ app { byFullName(fullName: \\\"@${ACCOUNT}/nculater\\\") { id } } }\"}" 2>/dev/null || echo '{}')
+  -d "{\"query\":\"{ app { byFullName(fullName: \\\"@${ACCOUNT}/nculator\\\") { id } } }\"}" 2>/dev/null || echo '{}')
 echo "Existing: $EXISTING"
 
 PROJECT_ID=$(echo "$EXISTING" | python3 -c "
@@ -37,7 +37,7 @@ if [ -z "$PROJECT_ID" ]; then
   RESP=$(curl -sf -X POST https://api.expo.dev/graphql \
     -H "Authorization: Bearer $EXPO_TOKEN" \
     -H "Content-Type: application/json" \
-    -d "{\"query\":\"mutation { app { createApp(appInput: { accountName: \\\"${ACCOUNT}\\\", projectName: \\\"nculater\\\" }) { id } } }\"}" 2>/dev/null || echo '{}')
+    -d "{\"query\":\"mutation { app { createApp(appInput: { accountName: \\\"${ACCOUNT}\\\", projectName: \\\"nculator\\\" }) { id } } }\"}" 2>/dev/null || echo '{}')
   echo "Create response: $RESP"
   PROJECT_ID=$(echo "$RESP" | python3 -c "
 import sys, json
@@ -63,5 +63,6 @@ print('app.json updated with projectId:', '$PROJECT_ID')
 PYEOF
   echo "=== Setup complete ==="
 else
-  echo "WARNING: No project ID found. Build may fail."
+  echo "ERROR: Could not get or create EAS project. Check EXPO_TOKEN and Expo account."
+  exit 1
 fi
