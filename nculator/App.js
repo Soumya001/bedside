@@ -53,7 +53,7 @@ function TabNavigator() {
         },
         tabBarActiveTintColor: theme.accent,
         tabBarInactiveTintColor: theme.muted,
-        tabBarLabel: '',
+        tabBarShowLabel: false,
         tabBarIcon: ({ focused, color }) => <TabIcon name={route.name} focused={focused} color={color} />,
       })}
     >

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppContext } from '../../App';
 
@@ -13,9 +13,13 @@ export default function TopBar() {
       <View style={{
         width: 40, height: 40, borderRadius: 12,
         backgroundColor: theme.s2, borderWidth: 1, borderColor: theme.border,
-        alignItems: 'center', justifyContent: 'center',
+        alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
       }}>
-        <Text style={{ fontSize: 20 }}>💊</Text>
+        <Image
+          source={require('../../assets/adaptive-icon.png')}
+          style={{ width: 34, height: 34 }}
+          resizeMode="contain"
+        />
       </View>
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text style={{ fontSize: 19, fontWeight: '700', letterSpacing: -0.3, color: theme.text, lineHeight: 23 }}>

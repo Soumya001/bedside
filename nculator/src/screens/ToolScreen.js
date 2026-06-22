@@ -299,7 +299,6 @@ const styles = (theme) => StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16, paddingBottom: 14, borderBottomWidth: 1 },
   backBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   iconBadge: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
-  iconText: { fontSize: 22 },
   toolName: { fontSize: 17, fontWeight: '700', letterSpacing: -0.2 },
   toolDesc: { fontSize: 12, marginTop: 2 },
   scroll: { flex: 1 },
