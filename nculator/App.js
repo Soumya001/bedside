@@ -120,7 +120,7 @@ export default function App() {
       if (obj.bs_accent) setAccent(obj.bs_accent);
       try { if (obj.bs_recents) setRecentTools(JSON.parse(obj.bs_recents)); } catch(e) {}
       try { if (obj.bs_pins) setPinnedTools(JSON.parse(obj.bs_pins)); } catch(e) {}
-    });
+    }).catch(() => {});
   }, []);
 
   const theme = getTheme(isDark, accent);

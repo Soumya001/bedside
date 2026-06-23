@@ -15,6 +15,7 @@ const ICON_DURATIONS = {
 };
 
 function getIconStyle(id, anim) {
+  if (!anim) return {};
   switch (id) {
     case 'dose':
       return {

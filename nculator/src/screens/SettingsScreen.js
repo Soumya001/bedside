@@ -95,8 +95,8 @@ export default function SettingsScreen() {
     }
   };
 
-  // ── update row UI ─────────────────────────────────────────────────────
-  const UpdateRow = () => {
+  // ── update row UI — plain function (not a component) to avoid remount ──
+  const renderUpdate = () => {
     if (updateStatus === 'checking') return (
       <View style={styles.row}>
         <MaterialCommunityIcons name="loading" size={22} color={theme.muted} />
@@ -127,11 +127,13 @@ export default function SettingsScreen() {
             <Text style={[styles.rowSub, { color: theme.muted }]}>{latestInfo.name}</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={downloadAndInstall}
-          style={[styles.installBtn, { backgroundColor: theme.accent }]}>
-          <MaterialCommunityIcons name="download" size={18} color="#000" />
-          <Text style={styles.installText}>Download & Install</Text>
-        </TouchableOpacity>
+        {Platform.OS === 'android' && (
+          <TouchableOpacity onPress={downloadAndInstall}
+            style={[styles.installBtn, { backgroundColor: theme.accent }]}>
+            <MaterialCommunityIcons name="download" size={18} color="#000" />
+            <Text style={styles.installText}>Download & Install</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
 
@@ -221,7 +223,7 @@ export default function SettingsScreen() {
           {/* UPDATES */}
           <Text style={[styles.sectionLabel, { color: theme.muted, marginTop: 24 }]}>UPDATES</Text>
           <View style={[styles.card, { backgroundColor: theme.s1, borderColor: theme.border }]}>
-            <UpdateRow />
+            {renderUpdate()}
           </View>
 
           {/* ABOUT */}
