@@ -56,9 +56,9 @@ export default function ToolsScreen({ navigation }) {
           <View style={s.list}>
             {filtered.map((tool) => (
               <Pressable key={tool.id}
-                style={({ pressed }) => [s.row, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.25)` }, pressed && s.pressed]}
+                style={({ pressed }) => [s.row, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.25)`, borderBottomColor: `rgba(${tool.rgb},0.38)`, shadowColor: `rgba(${tool.rgb},0.3)` }, pressed && s.pressed]}
                 onPress={() => openTool(tool)}>
-                <View style={[s.rowIcon, { backgroundColor: `rgba(${tool.rgb},0.18)` }]}>
+                <View style={[s.rowIcon, { backgroundColor: `rgba(${tool.rgb},0.15)`, borderColor: `rgba(${tool.rgb},0.22)` }]}>
                   <MaterialCommunityIcons name={tool.icon} size={20} color={tool.color} />
                 </View>
                 <View style={s.rowText}>
@@ -89,8 +89,8 @@ const styles = (theme) => StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 16, paddingTop: 4, paddingBottom: 32 },
   list: { gap: 10 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 15, borderRadius: 16, borderWidth: 1 },
-  rowIcon: { width: 44, height: 44, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 14, borderRadius: 20, borderWidth: 1, borderBottomWidth: 2.5, elevation: 3, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 10 },
+  rowIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   rowText: { flex: 1 },
   rowName: { fontSize: 15, fontWeight: '700', letterSpacing: -0.1 },
   rowDesc: { fontSize: 12, marginTop: 2 },

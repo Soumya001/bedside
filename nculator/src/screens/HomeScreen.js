@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useRef, useCallback, useState } from 'react';
-import { View, Text, Animated, Easing, ScrollView, Pressable, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Animated, Easing, ScrollView, Pressable, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -89,13 +89,28 @@ function getIconStyle(id, anim) {
 
 export default function HomeScreen({ navigation }) {
   const { theme, recentTools, pinnedTools, addRecent, setPins } = useContext(AppContext);
-  const [pinModal, setPinModal] = useState(false);
+  const [editing, setEditing] = useState(false);
 
-  const togglePin = useCallback((id) => {
+  const startEdit = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const current = pinnedTools || [];
-    const next = current.includes(id) ? current.filter(p => p !== id) : [...current, id];
-    setPins(next);
+    if (!pinnedTools?.length) {
+      const fallback = (recentTools?.length ? recentTools.slice(0, 3) : ['dose', 'drip', 'titration']);
+      setPins(fallback);
+    }
+    setEditing(true);
+  }, [pinnedTools, recentTools, setPins]);
+
+  const removePin = useCallback((id) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const next = (pinnedTools || []).filter(p => p !== id);
+    setPins(next.length ? next : null);
+  }, [pinnedTools, setPins]);
+
+  const addPin = useCallback((id) => {
+    const cur = pinnedTools || [];
+    if (cur.includes(id) || cur.length >= 3) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setPins([...cur, id]);
   }, [pinnedTools, setPins]);
   const s = styles(theme);
 
@@ -159,34 +174,66 @@ export default function HomeScreen({ navigation }) {
             <View style={[s.greetBar, { backgroundColor: theme.accent }]} />
           </View>
 
-          {/* FEATURED LABEL */}
+          {/* FEATURED HEADER */}
           <View style={s.sectionHeader}>
             <Text style={s.sectionLabel}>{featuredLabel}</Text>
-            <TouchableOpacity onPress={() => setPinModal(true)} style={s.manageBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <MaterialCommunityIcons name="pin-outline" size={16} color={theme.muted} />
-              <Text style={[s.manageText, { color: theme.muted }]}>Manage</Text>
-            </TouchableOpacity>
+            {editing ? (
+              <TouchableOpacity onPress={() => setEditing(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <Text style={[s.doneText, { color: theme.accent }]}>Done</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={startEdit} style={[s.tuneBtn, { backgroundColor: theme.s2 }]} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
+                <MaterialCommunityIcons name="tune-variant" size={19} color={theme.muted} />
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* FEATURED CARDS */}
           <View style={s.featuredList}>
             {featured.map((tool) => (
-              <Pressable key={tool.id}
-                style={({ pressed }) => [s.featCard, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.3)` }, pressed && s.pressed]}
-                onPress={() => openTool(tool)}>
-                <View style={[s.featIcon, { backgroundColor: `rgba(${tool.rgb},0.18)` }]}>
-                  <Animated.View style={getIconStyle(tool.id, iconProgress[tool.id])}>
-                    <MaterialCommunityIcons name={tool.icon} size={22} color={tool.color} />
-                  </Animated.View>
-                </View>
-                <View style={s.featText}>
-                  <Text style={[s.featName, { color: theme.text }]}>{tool.name}</Text>
-                  <Text style={[s.featDesc, { color: theme.muted }]}>{tool.desc}</Text>
-                </View>
-                <MaterialCommunityIcons name="chevron-right" size={22} color={theme.muted} />
-              </Pressable>
+              <View key={tool.id} style={{ position: 'relative' }}>
+                <Pressable
+                  style={({ pressed }) => [s.featCard, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.3)`, borderBottomColor: `rgba(${tool.rgb},0.42)`, shadowColor: `rgba(${tool.rgb},0.4)` }, pressed && !editing && s.pressed]}
+                  onPress={() => editing ? null : openTool(tool)}>
+                  <View style={[s.featIcon, { backgroundColor: `rgba(${tool.rgb},0.18)`, borderColor: `rgba(${tool.rgb},0.3)` }]}>
+                    <Animated.View style={getIconStyle(tool.id, iconProgress[tool.id])}>
+                      <MaterialCommunityIcons name={tool.icon} size={22} color={tool.color} />
+                    </Animated.View>
+                  </View>
+                  <View style={s.featText}>
+                    <Text style={[s.featName, { color: theme.text }]}>{tool.name}</Text>
+                    <Text style={[s.featDesc, { color: theme.muted }]}>{tool.desc}</Text>
+                  </View>
+                  {!editing && <MaterialCommunityIcons name="chevron-right" size={22} color={theme.muted} />}
+                </Pressable>
+                {editing && (
+                  <TouchableOpacity onPress={() => removePin(tool.id)} style={s.removeCircle}>
+                    <MaterialCommunityIcons name="minus" size={15} color="#fff" />
+                  </TouchableOpacity>
+                )}
+              </View>
             ))}
           </View>
+
+          {/* ADD TO PINNED (edit mode) */}
+          {editing && (() => {
+            const addable = TOOLS.filter(t => !(pinnedTools || []).includes(t.id));
+            return addable.length > 0 && (pinnedTools || []).length < 3 ? (
+              <View style={s.addSection}>
+                <Text style={[s.addLabel, { color: theme.muted }]}>Add to pinned</Text>
+                <View style={s.addChips}>
+                  {addable.map(tool => (
+                    <TouchableOpacity key={tool.id} onPress={() => addPin(tool.id)}
+                      style={[s.addChip, { backgroundColor: `rgba(${tool.rgb},0.12)`, borderColor: `rgba(${tool.rgb},0.22)` }]}
+                      activeOpacity={0.7}>
+                      <MaterialCommunityIcons name={tool.icon} size={17} color={tool.color} />
+                      <Text style={[s.addChipText, { color: theme.text }]}>{tool.name}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            ) : null;
+          })()}
 
           {/* DIVIDER */}
           <View style={s.divider}>
@@ -199,9 +246,9 @@ export default function HomeScreen({ navigation }) {
           <View style={s.grid}>
             {gridTools.map((tool) => (
               <Pressable key={tool.id}
-                style={({ pressed }) => [s.gridCard, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.2)` }, pressed && s.pressedGrid]}
+                style={({ pressed }) => [s.gridCard, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.2)`, borderBottomColor: `rgba(${tool.rgb},0.35)`, shadowColor: `rgba(${tool.rgb},0.3)` }, pressed && s.pressedGrid]}
                 onPress={() => openTool(tool)}>
-                <View style={[s.gridIconWrap, { backgroundColor: `rgba(${tool.rgb},0.15)` }]}>
+                <View style={[s.gridIconWrap, { backgroundColor: `rgba(${tool.rgb},0.16)`, borderColor: `rgba(${tool.rgb},0.25)` }]}>
                   <Animated.View style={getIconStyle(tool.id, iconProgress[tool.id])}>
                     <MaterialCommunityIcons name={tool.icon} size={20} color={tool.color} />
                   </Animated.View>
@@ -221,48 +268,6 @@ export default function HomeScreen({ navigation }) {
         </ScrollView>
       </Animated.View>
 
-      {/* PIN MANAGEMENT MODAL */}
-      <Modal visible={pinModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setPinModal(false)}>
-        <SafeAreaView style={[s.modalSafe, { backgroundColor: theme.bg }]}>
-          <View style={[s.modalHeader, { borderBottomColor: theme.border }]}>
-            <Text style={[s.modalTitle, { color: theme.text }]}>Manage Pins</Text>
-            <TouchableOpacity onPress={() => setPinModal(false)} style={[s.modalClose, { backgroundColor: theme.s2 }]}>
-              <MaterialCommunityIcons name="close" size={20} color={theme.text} />
-            </TouchableOpacity>
-          </View>
-          <Text style={[s.modalSub, { color: theme.muted }]}>Pinned tools appear in Quick access on the home screen.</Text>
-          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
-            <View style={{ gap: 8 }}>
-              {TOOLS.map(tool => {
-                const isPinned = (pinnedTools || []).includes(tool.id);
-                return (
-                  <Pressable key={tool.id}
-                    style={({ pressed }) => [s.pinRow, { backgroundColor: theme.s2, borderColor: isPinned ? `rgba(${tool.rgb},0.4)` : theme.border }, pressed && { opacity: 0.8 }]}
-                    onPress={() => togglePin(tool.id)}>
-                    <View style={[s.pinIcon, { backgroundColor: `rgba(${tool.rgb},0.18)` }]}>
-                      <MaterialCommunityIcons name={tool.icon} size={20} color={tool.color} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[s.pinName, { color: theme.text }]}>{tool.name}</Text>
-                      <Text style={[s.pinDesc, { color: theme.muted }]}>{tool.desc}</Text>
-                    </View>
-                    <View style={[s.pinToggle, { backgroundColor: isPinned ? `rgba(${tool.rgb},0.2)` : theme.s3, borderColor: isPinned ? `rgba(${tool.rgb},0.5)` : theme.border }]}>
-                      <MaterialCommunityIcons name={isPinned ? 'pin' : 'pin-outline'} size={18} color={isPinned ? tool.color : theme.muted} />
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {(pinnedTools?.length > 0) && (
-              <TouchableOpacity onPress={() => { setPins([]); }} style={[s.clearBtn, { borderColor: theme.border }]}>
-                <MaterialCommunityIcons name="pin-off-outline" size={16} color={theme.muted} />
-                <Text style={[s.clearText, { color: theme.muted }]}>Clear all pins</Text>
-              </TouchableOpacity>
-            )}
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
-
     </SafeAreaView>
   );
 }
@@ -277,13 +282,13 @@ const styles = (theme) => StyleSheet.create({
   greetSub: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5, color: theme.muted, textTransform: 'uppercase' },
   greetTitle: { fontSize: 34, fontWeight: '700', color: theme.text, letterSpacing: -0.5, marginTop: 8, lineHeight: 40 },
   greetBar: { width: 36, height: 3, borderRadius: 2, marginTop: 14, opacity: 0.8 },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: theme.muted, textTransform: 'uppercase', opacity: 0.7 },
-  manageBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  manageText: { fontSize: 11, fontWeight: '600' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 13 },
+  sectionLabel: { flex: 1, fontSize: 11, fontWeight: '700', letterSpacing: 1.2, color: theme.muted, textTransform: 'uppercase', opacity: 0.7 },
+  tuneBtn: { width: 34, height: 34, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  doneText: { fontSize: 13, fontWeight: '700', paddingVertical: 5, paddingHorizontal: 2 },
   featuredList: { gap: 9 },
-  featCard: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 18, borderRadius: 18, borderWidth: 1 },
-  featIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  featCard: { flexDirection: 'row', alignItems: 'center', gap: 16, padding: 19, borderRadius: 20, borderWidth: 1, borderBottomWidth: 2.5, elevation: 4, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 12 },
+  featIcon: { width: 52, height: 52, borderRadius: 17, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   featText: { flex: 1 },
   featName: { fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
   featDesc: { fontSize: 12, marginTop: 3 },
@@ -291,22 +296,16 @@ const styles = (theme) => StyleSheet.create({
   dividerLine: { flex: 1, height: 1 },
   dividerText: { fontSize: 10, fontWeight: '700', letterSpacing: 1.4, textTransform: 'uppercase', opacity: 0.45 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  gridCard: { width: '47.5%', padding: 15, borderRadius: 16, borderWidth: 1 },
-  gridIconWrap: { width: 38, height: 38, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  gridCard: { width: '47.5%', padding: 17, borderRadius: 20, borderWidth: 1, borderBottomWidth: 2.5, elevation: 3, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 10 },
+  gridIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   gridName: { fontSize: 14, fontWeight: '700', marginTop: 11, letterSpacing: -0.1 },
   gridDesc: { fontSize: 11, marginTop: 3, lineHeight: 15 },
   safetyNote: { marginTop: 20, padding: 16, borderRadius: 18, borderWidth: 1, flexDirection: 'row', alignItems: 'flex-start' },
   safetyText: { flex: 1, fontSize: 12, lineHeight: 18 },
-  modalSafe: { flex: 1 },
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1 },
-  modalTitle: { fontSize: 20, fontWeight: '700' },
-  modalClose: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
-  modalSub: { fontSize: 13, lineHeight: 18, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 },
-  pinRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, borderWidth: 1 },
-  pinIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  pinName: { fontSize: 14, fontWeight: '700' },
-  pinDesc: { fontSize: 11, marginTop: 2 },
-  pinToggle: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
-  clearBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 20, paddingVertical: 13, borderRadius: 14, borderWidth: 1 },
-  clearText: { fontSize: 13, fontWeight: '600' },
+  removeCircle: { position: 'absolute', top: -7, left: -7, width: 26, height: 26, borderRadius: 13, backgroundColor: '#ef4444', borderWidth: 2, borderColor: theme.bg, alignItems: 'center', justifyContent: 'center', zIndex: 3, elevation: 5 },
+  addSection: { paddingTop: 14, paddingBottom: 6 },
+  addLabel: { fontSize: 10.5, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10, opacity: 0.6 },
+  addChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  addChip: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingVertical: 9, paddingHorizontal: 13, borderRadius: 13, borderWidth: 1 },
+  addChipText: { fontSize: 12.5, fontWeight: '600' },
 });

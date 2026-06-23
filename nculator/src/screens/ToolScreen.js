@@ -4,6 +4,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppContext } from '../../App';
 
+const MONO = Platform.select({ ios: 'Courier', android: 'monospace' });
+
+const TOOL_HINTS = {
+  dose:     'Formula: (dose ÷ vial strength) × diluent volume. Caution if drawing > 5 mL for IM/SC — consider a more concentrated vial.',
+  drip:     'Formula: (volume × drop factor) ÷ (time × 60). Drop factor is printed on the IV set packet — 20 is the common adult default, 60 for paediatric/microdrip.',
+  pump:     'Formula: volume ÷ time. Programme this rate directly and confirm against the order.',
+  weight:   'Formula: weight × mg/kg = total daily dose ÷ doses/day = per dose. Use actual body weight unless the order specifies IBW or ABW.',
+  infusion: 'Formula: volume ÷ rate. Assumes the pump is running at the stated rate — update if the rate changes.',
+  convert:  'kg↔lb: factor 2.20462. g→mg, mg→mcg, L→mL: all ×1000. For clinical dosing always work in the unit stated on the order.',
+  titration:'Concentration (µg/mL) = (drug mg × 1000) ÷ bag volume. Pump rate (mL/hr) = (dose × weight × 60) ÷ concentration. Verify against the pharmacy label.',
+  oxygen:   'SpO₂ is measured by pulse oximetry, not calculated. Enter the reading and select the patient category to check the evidence-based target range.',
+  cannula:  'Flow rate depends on gauge, length, tubing, and fluid viscosity. Rates shown are approximate gravity-flow maxima from manufacturer data.',
+  creatinine:'Cockcroft–Gault formula. Serum creatinine must be in mg/dL (divide µmol/L by 88.4 to convert). Uses actual body weight.',
+  reconstitution:'Concentration = drug (mg) ÷ diluent added (mL). Draw-up volume = dose wanted ÷ concentration. Check the product monograph for correct diluent.',
+  bsa:      'Mosteller formula: BSA = √((height × weight) ÷ 3600). Used for chemotherapy and paediatric dosing where weight alone is insufficient.',
+};
+
 export default function ToolScreen({ route, navigation }) {
   const { tool } = route.params;
   const { theme } = useContext(AppContext);
@@ -66,7 +83,7 @@ export default function ToolScreen({ route, navigation }) {
           </View>
         </View>
 
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <ScrollView style={s.scroll} contentContainerStyle={s.content} keyboardShouldPersistTaps="always" showsVerticalScrollIndicator={false}>
 
           {/* HIGH-RISK BANNER */}
           {isTitration && (
@@ -121,6 +138,14 @@ export default function ToolScreen({ route, navigation }) {
               );
             })}
           </View>
+
+          {/* GUIDELINE HINT */}
+          {TOOL_HINTS[tool.id] && (
+            <View style={[s.hintCard, { backgroundColor: `rgba(${accentRgb},0.08)`, borderColor: `rgba(${accentRgb},0.15)` }]}>
+              <MaterialCommunityIcons name="information-outline" size={17} color={accentColor} style={{ opacity: 0.85, marginTop: 1 }} />
+              <Text style={[s.hintText, { color: theme.muted }]}>{TOOL_HINTS[tool.id]}</Text>
+            </View>
+          )}
 
           {/* RESULT */}
           {result?.err ? (
@@ -324,11 +349,13 @@ const styles = (theme) => StyleSheet.create({
   bannerEmoji: { fontSize: 18 },
   bannerText: { flex: 1, fontSize: 13, lineHeight: 19 },
   fields: { gap: 10, marginBottom: 14 },
-  fieldCard: { borderRadius: 16, borderWidth: 1, padding: 14, shadowOffset: { width: 0, height: 2 } },
+  fieldCard: { borderRadius: 18, borderWidth: 1, padding: 14, shadowOffset: { width: 0, height: 2 } },
+  hintCard: { flexDirection: 'row', gap: 10, padding: 12, borderRadius: 16, borderWidth: 1, marginBottom: 14, alignItems: 'flex-start' },
+  hintText: { flex: 1, fontSize: 12, lineHeight: 19 },
   fieldTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
   fieldLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase' },
   fieldInputRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
-  fieldInput: { flex: 1, fontSize: 28, fontWeight: '600', fontFamily: 'Courier', letterSpacing: -0.5, height: 40 },
+  fieldInput: { flex: 1, fontSize: 28, fontWeight: '600', fontFamily: MONO, letterSpacing: -0.5, height: 40 },
   fieldUnit: { fontSize: 14, fontWeight: '500' },
   optScroll: { marginTop: 4 },
   optRow: { flexDirection: 'row', gap: 8, paddingVertical: 4 },
@@ -340,12 +367,12 @@ const styles = (theme) => StyleSheet.create({
   resultCard: { borderRadius: 22, borderWidth: 1, padding: 22, marginBottom: 14, shadowOffset: { width: 0, height: 8 } },
   resultLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 },
   resultRow: { flexDirection: 'row', alignItems: 'baseline' },
-  bigNum: { fontSize: 52, fontWeight: '700', fontFamily: 'Courier', letterSpacing: -1, lineHeight: 60 },
+  bigNum: { fontSize: 52, fontWeight: '700', fontFamily: MONO, letterSpacing: -1, lineHeight: 60 },
   bigUnit: { fontSize: 18, fontWeight: '400' },
-  subText: { fontSize: 14, fontFamily: 'Courier', marginTop: 6 },
-  workingText: { fontSize: 12, fontFamily: 'Courier', marginTop: 10, lineHeight: 18 },
+  subText: { fontSize: 14, fontFamily: MONO, marginTop: 6 },
+  workingText: { fontSize: 12, fontFamily: MONO, marginTop: 10, lineHeight: 18 },
   divLine: { height: 1, marginVertical: 18 },
-  statusText: { fontSize: 26, fontWeight: '700', fontFamily: 'Courier', marginTop: 8 },
+  statusText: { fontSize: 26, fontWeight: '700', fontFamily: MONO, marginTop: 8 },
   statusTarget: { fontSize: 12, marginTop: 4, marginBottom: 12 },
   actionBox: { padding: 12, borderRadius: 12, marginBottom: 10 },
   actionText: { fontSize: 13, lineHeight: 20 },
@@ -363,20 +390,20 @@ const styles = (theme) => StyleSheet.create({
   spotLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 },
   spotRow: { flexDirection: 'row', gap: 8 },
   spotChip: { flex: 1, alignItems: 'center', padding: 10, borderRadius: 12, borderWidth: 1 },
-  spotCount: { fontSize: 22, fontWeight: '700', fontFamily: 'Courier' },
+  spotCount: { fontSize: 22, fontWeight: '700', fontFamily: MONO },
   spotTime: { fontSize: 11, fontWeight: '700', marginTop: 3 },
   spotTip: { fontSize: 10, textAlign: 'center', marginTop: 2 },
   stageCard: { marginTop: 12, padding: 12, borderRadius: 12 },
   stageText: { fontSize: 13, fontWeight: '600' },
   checkTitle: { fontSize: 14, fontWeight: '700', marginBottom: 4 },
   checkSub: { fontSize: 12, lineHeight: 17, marginBottom: 12 },
-  checkInput: { height: 52, borderRadius: 14, borderWidth: 1, paddingHorizontal: 16, fontSize: 20, fontFamily: 'Courier', fontWeight: '600' },
+  checkInput: { height: 52, borderRadius: 14, borderWidth: 1, paddingHorizontal: 16, fontSize: 20, fontFamily: MONO, fontWeight: '600' },
   checkResult: { marginTop: 10, padding: 13, borderRadius: 12 },
   checkResultText: { fontSize: 13, fontWeight: '700' },
   safetyFooter: { margin: 0, padding: 14, borderRadius: 16, marginTop: 4 },
   safetyText: { fontSize: 11.5, lineHeight: 17 },
   stickyFooter: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingVertical: 14, paddingBottom: Platform.OS === 'ios' ? 10 : 14, borderTopWidth: 1 },
   stickyLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' },
-  stickyVal: { fontSize: 32, fontWeight: '700', fontFamily: 'Courier', letterSpacing: -0.5 },
+  stickyVal: { fontSize: 32, fontWeight: '700', fontFamily: MONO, letterSpacing: -0.5 },
   stickyEmpty: { fontSize: 14 },
 });

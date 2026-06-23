@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useCallback, useState, useEffect } from 'react';
+import React, { useContext, useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import { View, Text, Animated, Easing, ScrollView, TouchableOpacity, Switch, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -95,11 +95,27 @@ export default function SettingsScreen() {
     }
   };
 
+  // ── spinner for checking state ──
+  const spinAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (updateStatus === 'checking') {
+      spinAnim.setValue(0);
+      Animated.loop(
+        Animated.timing(spinAnim, { toValue: 1, duration: 900, easing: Easing.linear, useNativeDriver: true })
+      ).start();
+    } else {
+      spinAnim.stopAnimation();
+    }
+  }, [updateStatus]);
+  const spin = spinAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+
   // ── update row UI — plain function (not a component) to avoid remount ──
   const renderUpdate = () => {
     if (updateStatus === 'checking') return (
       <View style={styles.row}>
-        <MaterialCommunityIcons name="loading" size={22} color={theme.muted} />
+        <Animated.View style={{ transform: [{ rotate: spin }] }}>
+          <MaterialCommunityIcons name="loading" size={22} color={theme.muted} />
+        </Animated.View>
         <Text style={[styles.rowSub, { color: theme.muted, flex: 1 }]}>Checking for updates…</Text>
       </View>
     );

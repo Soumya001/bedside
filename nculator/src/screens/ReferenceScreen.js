@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useCallback } from 'react';
-import { View, Text, Animated, Easing, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Animated, Easing, ScrollView, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../../App';
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   spo2Grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, padding: 12 },
   spo2Card: { width: '46%', padding: 13, borderRadius: 13 },
   spo2Label: { fontSize: 10, fontWeight: '700', letterSpacing: 0.6, textTransform: 'uppercase' },
-  spo2Range: { fontSize: 22, fontWeight: '700', fontFamily: 'Courier', marginTop: 6, lineHeight: 26 },
+  spo2Range: { fontSize: 22, fontWeight: '700', fontFamily: Platform.select({ ios: 'Courier', android: 'monospace' }), marginTop: 6, lineHeight: 26 },
   spo2Sub: { fontSize: 11, marginTop: 4, lineHeight: 15 },
   warnNote: { margin: 12, marginTop: 4, padding: 13, borderRadius: 12 },
   warnNoteText: { fontSize: 12.5, lineHeight: 19 },
