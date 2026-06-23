@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useRef, useCallback, useState } from 'react';
-import { View, Text, Animated, Easing, ScrollView, Pressable, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Animated, Easing, ScrollView, Pressable, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -194,7 +194,7 @@ export default function HomeScreen({ navigation }) {
             {featured.map((tool) => (
               <View key={tool.id} style={{ position: 'relative' }}>
                 <Pressable
-                  style={({ pressed }) => [s.featCard, { shadowColor: `rgba(${tool.rgb},0.5)` }, pressed && !editing && s.pressed]}
+                  style={({ pressed }) => [s.featCard, { shadowColor: `rgba(${tool.rgb},0.5)`, borderBottomColor: `rgba(${tool.rgb},0.42)` }, pressed && !editing && s.pressed]}
                   onPress={() => editing ? null : openTool(tool)}>
                   <LinearGradient
                     colors={isDark ? [`rgba(${tool.rgb},0.22)`, '#1a1b22', '#14151b'] : [`rgba(${tool.rgb},0.12)`, '#ffffff', '#ffffff']}
@@ -252,7 +252,7 @@ export default function HomeScreen({ navigation }) {
           <View style={s.grid}>
             {gridTools.map((tool) => (
               <Pressable key={tool.id}
-                style={({ pressed }) => [s.gridCard, { shadowColor: `rgba(${tool.rgb},0.4)` }, pressed && s.pressedGrid]}
+                style={({ pressed }) => [s.gridCard, { shadowColor: `rgba(${tool.rgb},0.4)`, borderBottomColor: `rgba(${tool.rgb},0.42)` }, pressed && s.pressedGrid]}
                 onPress={() => openTool(tool)}>
                 <LinearGradient
                   colors={isDark ? [`rgba(${tool.rgb},0.22)`, '#1a1b22', '#14151b'] : [`rgba(${tool.rgb},0.12)`, '#ffffff', '#ffffff']}
@@ -299,8 +299,8 @@ const styles = (theme) => StyleSheet.create({
   tuneBtn: { width: 34, height: 34, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
   doneText: { fontSize: 13, fontWeight: '700', paddingVertical: 5, paddingHorizontal: 2 },
   featuredList: { gap: 9 },
-  featCard: { borderRadius: 20, elevation: 8, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 20, overflow: 'hidden' },
-  featGradient: { flexDirection: 'row', alignItems: 'center', gap: 16, padding: 19, borderRadius: 20 },
+  featCard: { borderRadius: 20, elevation: 8, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 20, overflow: 'hidden', borderBottomWidth: 3 },
+  featGradient: { flexDirection: 'row', alignItems: 'center', gap: 16, padding: 19 },
   featIcon: { width: 52, height: 52, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   featText: { flex: 1 },
   featName: { fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
@@ -308,9 +308,9 @@ const styles = (theme) => StyleSheet.create({
   divider: { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 22 },
   dividerLine: { flex: 1, height: 1 },
   dividerText: { fontSize: 10, fontWeight: '700', letterSpacing: 1.4, textTransform: 'uppercase', opacity: 0.45 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  gridCard: { width: '47.5%', borderRadius: 20, elevation: 6, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 16, overflow: 'hidden' },
-  gridGradient: { padding: 17, borderRadius: 20, position: 'relative' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
+  gridCard: { width: (Dimensions.get('window').width - 32 - 9) / 2, borderRadius: 20, elevation: 6, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 16, overflow: 'hidden', borderBottomWidth: 3 },
+  gridGradient: { padding: 17, paddingBottom: 20, borderRadius: 20, position: 'relative', minHeight: 140 },
   dotPip: { position: 'absolute', top: 15, right: 15, width: 7, height: 7, borderRadius: 3.5 },
   gridIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   gridName: { fontSize: 14, fontWeight: '700', marginTop: 11, letterSpacing: -0.1 },

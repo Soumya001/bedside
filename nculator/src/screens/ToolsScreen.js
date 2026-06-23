@@ -60,7 +60,7 @@ export default function ToolsScreen({ navigation }) {
             )}
             {filtered.map((tool) => (
               <Pressable key={tool.id}
-                style={({ pressed }) => [s.row, { shadowColor: `rgba(${tool.rgb},0.4)` }, pressed && s.pressed]}
+                style={({ pressed }) => [s.row, { shadowColor: `rgba(${tool.rgb},0.4)`, borderBottomColor: `rgba(${tool.rgb},0.38)` }, pressed && s.pressed]}
                 onPress={() => openTool(tool)}>
                 <LinearGradient
                   colors={isDark ? [`rgba(${tool.rgb},0.22)`, '#1a1b22', '#14151b'] : [`rgba(${tool.rgb},0.12)`, '#ffffff', '#ffffff']}
@@ -98,7 +98,7 @@ const styles = (theme) => StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 16, paddingTop: 4, paddingBottom: 32 },
   list: { gap: 10 },
-  row: { borderRadius: 20, elevation: 6, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 16, overflow: 'hidden' },
+  row: { borderRadius: 20, elevation: 6, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 16, overflow: 'hidden', borderBottomWidth: 3 },
   rowGradient: { flexDirection: 'row', alignItems: 'center', gap: 13, padding: 14, borderRadius: 20 },
   rowIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
   rowText: { flex: 1 },
