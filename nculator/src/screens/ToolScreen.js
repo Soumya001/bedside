@@ -1,5 +1,5 @@
 import React, { useContext, useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, Animated, Easing, ScrollView, TouchableOpacity, TextInput, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Animated, Easing, ScrollView, TouchableOpacity, Pressable, TextInput, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppContext } from '../../App';
@@ -90,14 +90,14 @@ export default function ToolScreen({ route, navigation }) {
                 return (
                   <View key={field.key} style={[s.fieldCard, { backgroundColor: theme.s2, borderColor, shadowColor, shadowOpacity: 1, shadowRadius: 8, elevation: 2 }]}>
                     <Text style={[s.fieldLabel, { color: theme.muted }]}>{field.label}</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.optScroll}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="always" style={s.optScroll}>
                       <View style={s.optRow}>
                         {opts.map(opt => (
-                          <TouchableOpacity key={opt.value}
+                          <Pressable key={opt.value}
                             style={[s.optChip, { backgroundColor: val === opt.value ? `rgba(${accentRgb},0.2)` : theme.s3, borderColor: val === opt.value ? `rgba(${accentRgb},0.5)` : theme.border }]}
                             onPress={() => setValue(field.key, opt.value)}>
                             <Text style={[s.optText, { color: val === opt.value ? accentColor : theme.muted, fontWeight: val === opt.value ? '700' : '400' }]}>{opt.label}</Text>
-                          </TouchableOpacity>
+                          </Pressable>
                         ))}
                       </View>
                     </ScrollView>
