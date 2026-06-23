@@ -25,6 +25,7 @@ export default function ToolScreen({ route, navigation }) {
   const { tool } = route.params;
   const { theme } = useContext(AppContext);
   const [values, setValues] = useState({});
+  const [openDrop, setOpenDrop] = useState(null);
   const [titCheck, setTitCheck] = useState('');
   const s = styles(theme);
 
@@ -137,20 +138,27 @@ export default function ToolScreen({ route, navigation }) {
 
               if (field.mode === 'select') {
                 const opts = field.options || [];
+                const selectedOpt = opts.find(o => o.value === val) || opts[0];
+                const isOpen = openDrop === field.key;
                 return (
                   <View key={field.key} style={[s.fieldCard, { backgroundColor: theme.s2, borderColor, shadowColor, shadowOpacity: 1, shadowRadius: 8, elevation: 2 }]}>
-                    <Text style={[s.fieldLabel, { color: theme.muted }]}>{field.label}</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="always" style={s.optScroll}>
-                      <View style={s.optRow}>
+                    <Text style={[s.fieldLabel, { color: theme.muted, padding: 0, paddingTop: 10, paddingHorizontal: 16 }]}>{field.label}</Text>
+                    <Pressable onPress={() => setOpenDrop(isOpen ? null : field.key)} style={s.dropTrigger}>
+                      <Text style={[s.dropTriggerText, { color: theme.text }]} numberOfLines={1}>{selectedOpt?.label}</Text>
+                      <MaterialCommunityIcons name={isOpen ? 'chevron-up' : 'chevron-down'} size={22} color={accentColor} />
+                    </Pressable>
+                    {isOpen && (
+                      <View style={[s.dropPanel, { borderTopColor: theme.border }]}>
                         {opts.map(opt => (
                           <Pressable key={opt.value}
-                            style={[s.optChip, { backgroundColor: val === opt.value ? `rgba(${accentRgb},0.2)` : theme.s3, borderColor: val === opt.value ? `rgba(${accentRgb},0.5)` : theme.border }]}
-                            onPress={() => setValue(field.key, opt.value)}>
-                            <Text style={[s.optText, { color: val === opt.value ? accentColor : theme.muted, fontWeight: val === opt.value ? '700' : '400' }]}>{opt.label}</Text>
+                            style={[s.dropOption, { backgroundColor: val === opt.value ? `rgba(${accentRgb},0.12)` : 'transparent' }]}
+                            onPress={() => { setValue(field.key, opt.value); setOpenDrop(null); }}>
+                            <Text style={[s.dropOptionText, { color: val === opt.value ? accentColor : theme.text, fontWeight: val === opt.value ? '700' : '400' }]}>{opt.label}</Text>
+                            {val === opt.value && <MaterialCommunityIcons name="check" size={18} color={accentColor} />}
                           </Pressable>
                         ))}
                       </View>
-                    </ScrollView>
+                    )}
                   </View>
                 );
               }
@@ -398,10 +406,11 @@ const styles = (theme) => StyleSheet.create({
   fieldInputRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
   fieldInput: { flex: 1, fontSize: 28, fontWeight: '600', fontFamily: MONO, letterSpacing: -0.5, height: 40 },
   fieldUnit: { fontSize: 14, fontWeight: '500' },
-  optScroll: { marginTop: 4 },
-  optRow: { flexDirection: 'row', gap: 8, paddingVertical: 4 },
-  optChip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1 },
-  optText: { fontSize: 13 },
+  dropTrigger: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10 },
+  dropTriggerText: { flex: 1, fontSize: 19, fontWeight: '600', fontFamily: MONO, letterSpacing: -0.3 },
+  dropPanel: { borderTopWidth: 1 },
+  dropOption: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 13, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(128,128,128,0.15)' },
+  dropOptionText: { flex: 1, fontSize: 14, lineHeight: 19 },
   errCard: { flexDirection: 'row', gap: 10, padding: 14, borderRadius: 16, borderWidth: 1, alignItems: 'flex-start', marginBottom: 14 },
   errEmoji: { fontSize: 18 },
   errText: { flex: 1, fontSize: 13, fontWeight: '500', lineHeight: 19 },
