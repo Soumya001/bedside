@@ -3,8 +3,16 @@ import { View, Image, TouchableOpacity, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppContext } from '../../App';
 
-export default function TopBar() {
+const SUBTITLES = {
+  Home: 'Clinical calculators',
+  Tools: 'Calculators',
+  Reference: 'Reference',
+  Settings: 'Settings',
+};
+
+export default function TopBar({ tab }) {
   const { theme, isDark, setTheme } = useContext(AppContext);
+  const subtitle = SUBTITLES[tab] || 'Clinical calculators';
   return (
     <View style={{
       flexDirection: 'row', alignItems: 'center', gap: 12,
@@ -26,7 +34,7 @@ export default function TopBar() {
           Nculator
         </Text>
         <Text style={{ fontSize: 11.5, color: theme.muted, marginTop: 1 }}>
-          Clinical calculators
+          {subtitle}
         </Text>
       </View>
       <TouchableOpacity

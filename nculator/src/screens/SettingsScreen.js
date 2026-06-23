@@ -196,11 +196,9 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-      <TopBar />
+      <TopBar tab="Settings" />
       <Animated.View style={{ flex: 1, opacity, transform: [{ translateY }] }}>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-
-          <Text style={[styles.title, { color: theme.text }]}>Settings</Text>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
 
           {/* APPEARANCE */}
           <Text style={[styles.sectionLabel, { color: theme.muted }]}>APPEARANCE</Text>
@@ -284,13 +282,13 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   title:        { fontSize: 28, fontWeight: '700', letterSpacing: -0.5, marginBottom: 24 },
   sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 },
-  card:         { borderRadius: 18, borderWidth: 1, overflow: 'hidden' },
+  card:         { borderRadius: 20, borderWidth: 1, overflow: 'hidden' },
   row:          { flexDirection: 'row', gap: 13, padding: 16, alignItems: 'center' },
   rowInner:     { flexDirection: 'row', gap: 13, alignItems: 'center' },
   rowTitle:     { fontSize: 15, fontWeight: '600' },
   rowSub:       { fontSize: 12, marginTop: 2 },
   divider:      { height: 1, marginHorizontal: 16 },
-  swatches:     { flexDirection: 'row', gap: 10, marginTop: 12 },
+  swatches:     { flexDirection: 'row', gap: 11, marginTop: 12 },
   swatch:       { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   disclaimer:   { marginTop: 24, padding: 16, borderRadius: 16, borderWidth: 1 },
   disclaimerText: { fontSize: 12, lineHeight: 18 },

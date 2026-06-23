@@ -52,11 +52,9 @@ export default function ReferenceScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-      <TopBar />
+      <TopBar tab="Reference" />
       <Animated.View style={{ flex: 1, opacity, transform: [{ translateY }] }}>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-
-          <Text style={[s.title, { color: theme.text }]}>Reference</Text>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
 
           <SECTION label="HOW TO USE" theme={theme}>
             <Step n="1" text="Enter values exactly as written on the order — unit for unit. Do not convert in your head before entering." theme={theme} />
@@ -132,7 +130,7 @@ export default function ReferenceScreen() {
 const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700', letterSpacing: -0.5, marginBottom: 24 },
   sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 },
-  card: { borderRadius: 18, borderWidth: 1, overflow: 'hidden' },
+  card: { borderRadius: 20, borderWidth: 1, overflow: 'hidden' },
   row: { flexDirection: 'row', gap: 12, padding: 15, alignItems: 'flex-start' },
   rowIcon: { fontSize: 17, marginTop: 1 },
   rowTitle: { fontSize: 13, fontWeight: '700', marginBottom: 3 },

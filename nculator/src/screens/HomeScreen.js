@@ -163,7 +163,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={s.safe}>
-      <TopBar />
+      <TopBar tab="Home" />
       <Animated.View style={{ flex: 1, opacity, transform: [{ translateY }] }}>
         <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
 

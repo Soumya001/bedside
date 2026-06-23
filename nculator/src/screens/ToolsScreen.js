@@ -37,7 +37,7 @@ export default function ToolsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={s.safe}>
-      <TopBar />
+      <TopBar tab="Tools" />
       <Animated.View style={{ flex: 1, opacity, transform: [{ translateY }] }}>
 
         {/* SEARCH */}
@@ -52,8 +52,11 @@ export default function ToolsScreen({ navigation }) {
           )}
         </View>
 
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={s.scroll} contentContainerStyle={s.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View style={s.list}>
+            {filtered.length === 0 && query.length > 0 && (
+              <Text style={[s.noResults, { color: theme.muted }]}>No match for "{query}"</Text>
+            )}
             {filtered.map((tool) => (
               <Pressable key={tool.id}
                 style={({ pressed }) => [s.row, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.25)`, borderBottomColor: `rgba(${tool.rgb},0.38)`, shadowColor: `rgba(${tool.rgb},0.3)` }, pressed && s.pressed]}
@@ -84,7 +87,7 @@ export default function ToolsScreen({ navigation }) {
 const styles = (theme) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.bg },
   pressed: { transform: [{ scale: 0.974 }], opacity: 0.92 },
-  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginBottom: 10, height: 52, borderRadius: 16, borderWidth: 1, paddingHorizontal: 14 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 16, marginTop: 12, marginBottom: 18, height: 54, borderRadius: 16, borderWidth: 1, paddingHorizontal: 14 },
   searchInput: { flex: 1, fontSize: 15, height: '100%' },
   scroll: { flex: 1 },
   content: { padding: 16, paddingTop: 4, paddingBottom: 32 },
@@ -96,4 +99,5 @@ const styles = (theme) => StyleSheet.create({
   rowDesc: { fontSize: 12, marginTop: 2 },
   dangerBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 7 },
   dangerText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  noResults: { textAlign: 'center', paddingVertical: 40, fontSize: 14 },
 });
