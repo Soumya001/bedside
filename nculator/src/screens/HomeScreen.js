@@ -14,25 +14,19 @@ function card3dShadow(rgb, isDark, danger) {
   const d = danger ? true : false;
   if (isDark) {
     return { boxShadow: [
-      'inset 0 1.5px 0 rgba(255,255,255,.13)',
-      'inset 1px 0 0 rgba(255,255,255,.04)',
-      'inset -1px 0 0 rgba(0,0,0,.2)',
-      '0 0 0 1px rgba(0,0,0,.7)',
-      `0 1px 0 rgba(${rgb},${d?.6:.42})`,
-      '0 3px 0 rgba(0,0,0,.9)',
-      '0 5px 0 rgba(0,0,0,.4)',
-      `0 10px 28px rgba(${rgb},${d?.2:.13})`,
-      '0 20px 55px rgba(0,0,0,.55)',
+      `0 0 0 1px rgba(0,0,0,.7)`,
+      `0 1px 0 rgba(${rgb},${d ? 0.6 : 0.42})`,
+      `0 3px 0 rgba(0,0,0,.9)`,
+      `0 10px 28px rgba(${rgb},${d ? 0.2 : 0.13})`,
+      `0 20px 55px rgba(0,0,0,.55)`,
     ].join(', ') };
   }
   return { boxShadow: [
-    'inset 0 1px 0 rgba(255,255,255,.95)',
-    'inset 0 -1px 0 rgba(0,0,0,.04)',
-    `0 0 0 1px rgba(${rgb},${d?.22:.15})`,
-    `0 2px 0 rgba(${rgb},${d?.38:.26})`,
-    '0 4px 0 rgba(0,0,0,.07)',
-    `0 8px 22px rgba(${rgb},${d?.14:.09})`,
-    '0 18px 40px rgba(0,0,0,.08)',
+    `0 0 0 1px rgba(${rgb},${d ? 0.22 : 0.15})`,
+    `0 2px 0 rgba(${rgb},${d ? 0.38 : 0.26})`,
+    `0 4px 0 rgba(0,0,0,.07)`,
+    `0 8px 22px rgba(${rgb},${d ? 0.14 : 0.09})`,
+    `0 18px 40px rgba(0,0,0,.08)`,
   ].join(', ') };
 }
 
@@ -221,7 +215,7 @@ export default function HomeScreen({ navigation }) {
             {featured.map((tool) => (
               <View key={tool.id} style={{ position: 'relative' }}>
                 <Pressable
-                  style={({ pressed }) => [s.featCard, { borderColor: `rgba(${tool.rgb},0.3)`, shadowColor: `rgba(${tool.rgb},0.5)`, ...card3dShadow(tool.rgb, isDark, tool.danger) }, pressed && !editing && s.pressed]}
+                  style={({ pressed }) => [s.featCard, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.3)`, shadowColor: `rgba(${tool.rgb},0.5)`, ...card3dShadow(tool.rgb, isDark, tool.danger) }, pressed && !editing && s.pressed]}
                   onPress={() => editing ? null : openTool(tool)}>
                   <LinearGradient
                     colors={isDark ? [`rgba(${tool.rgb},0.22)`, '#1a1b22'] : [`rgba(${tool.rgb},0.12)`, '#ffffff']}
@@ -279,7 +273,7 @@ export default function HomeScreen({ navigation }) {
           <View style={s.grid}>
             {gridTools.map((tool) => (
               <Pressable key={tool.id}
-                style={({ pressed }) => [s.gridCard, { borderColor: `rgba(${tool.rgb},0.2)`, shadowColor: `rgba(${tool.rgb},0.4)`, ...card3dShadow(tool.rgb, isDark, tool.danger) }, pressed && s.pressedGrid]}
+                style={({ pressed }) => [s.gridCard, { backgroundColor: theme.s2, borderColor: `rgba(${tool.rgb},0.2)`, shadowColor: `rgba(${tool.rgb},0.4)`, ...card3dShadow(tool.rgb, isDark, tool.danger) }, pressed && s.pressedGrid]}
                 onPress={() => openTool(tool)}>
                 <LinearGradient
                   colors={isDark ? [`rgba(${tool.rgb},0.22)`, '#1a1b22'] : [`rgba(${tool.rgb},0.12)`, '#ffffff']}
@@ -328,7 +322,7 @@ const styles = (theme) => StyleSheet.create({
   featuredList: { gap: 9 },
   featCard: { borderRadius: 20, borderWidth: 1, ...Platform.select({ web: { overflow: 'hidden' }, default: { elevation: 6, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 14 } }) },
   featGradient: { flexDirection: 'row', alignItems: 'center', gap: 16, padding: 19, borderRadius: 19, overflow: 'hidden' },
-  featIcon: { width: 52, height: 52, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  featIcon: { width: 52, height: 52, borderRadius: 17, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   featText: { flex: 1 },
   featName: { fontSize: 16, fontWeight: '700', letterSpacing: -0.2 },
   featDesc: { fontSize: 12, marginTop: 3 },
@@ -339,7 +333,7 @@ const styles = (theme) => StyleSheet.create({
   gridCard: { width: '48%', borderRadius: 20, borderWidth: 1, ...Platform.select({ web: { overflow: 'hidden' }, default: { elevation: 5, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 12 } }) },
   gridGradient: { padding: 17, paddingBottom: 20, position: 'relative', borderRadius: 19, overflow: 'hidden', minHeight: 150 },
   dotPip: { position: 'absolute', top: 15, right: 15, width: 7, height: 7, borderRadius: 3.5 },
-  gridIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  gridIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   gridName: { fontSize: 14, fontWeight: '700', marginTop: 11, letterSpacing: -0.1 },
   gridDesc: { fontSize: 11, marginTop: 3, lineHeight: 15 },
   safetyNote: { marginTop: 20, padding: 16, borderRadius: 18, borderWidth: 1, flexDirection: 'row', alignItems: 'flex-start' },
